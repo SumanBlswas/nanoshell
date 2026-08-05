@@ -5,6 +5,7 @@ pub fn build(b: *std.Build) void {
         .default_target = .{
             .cpu_arch = .x86_64,
             .os_tag = .windows,
+            .abi = .gnu,
             .cpu_model = .baseline,
         },
     });

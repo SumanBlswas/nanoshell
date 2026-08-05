@@ -24,8 +24,20 @@ pub fn main() !void {
     var shm_matrix = shm_mod.SharedMemoryMatrix.init("ZeroUI_ExampleApp_IPC", 1024 * 1024);
     _ = try shm_matrix.createMapping();
 
+    // Check command line arguments for --dev flag
+    const WinApi = struct {
+        pub extern "kernel32" fn GetCommandLineA() callconv(.winapi) [*:0]const u8;
+    };
+    var is_dev_mode = false;
+    const cmd_line = std.mem.span(WinApi.GetCommandLineA());
+    if (std.mem.indexOf(u8, cmd_line, "--dev") != null) {
+        is_dev_mode = true;
+    }
+
     // 4. Initialize 100% Chrome-Identical Native Window via AppCore Engine FIRST
-    var ultralight_bridge = try ultralight_mod.UltralightBridge.init(allocator, 1280, 720, .{});
+    var ultralight_bridge = try ultralight_mod.UltralightBridge.init(allocator, 1280, 720, .{
+        .enable_hot_reload = is_dev_mode,
+    });
     defer ultralight_bridge.deinit();
 
     // Dynamically load any developer HTML file or URL from disk

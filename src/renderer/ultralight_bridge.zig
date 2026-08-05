@@ -22,6 +22,7 @@ pub const UltralightConfig = struct {
     device_scale: f64 = 1.0,
     enable_gpu: bool = false,
     show_fps: bool = false,
+    enable_hot_reload: bool = false,
 };
 
 pub const UltralightBridge = struct {
@@ -34,6 +35,7 @@ pub const UltralightBridge = struct {
     view: c.ULView,
     update_counter: u32 = 0,
     config: UltralightConfig = .{},
+    last_app_mtime: i128 = 0,
 
     fn onResize(user_data: ?*anyopaque, window: c.ULWindow, width: c_uint, height: c_uint) callconv(.c) void {
         _ = window;
@@ -63,6 +65,62 @@ pub const UltralightBridge = struct {
         if (user_data) |ud| {
             const self: *UltralightBridge = @ptrCast(@alignCast(ud));
             self.update_counter += 1;
+
+            // In-Window Hot Reload Check (Dev mode only): Every 15 ticks (~120ms at 120 FPS)
+            if (self.config.enable_hot_reload and self.update_counter % 15 == 0) {
+                const io = std.Io.Threaded.global_single_threaded.io();
+                const cwd = std.Io.Dir.cwd();
+                var max_mtime: i128 = 0;
+
+                // Resolve executable base and parent directory
+                var exe_path_buf: [1024]u8 = undefined;
+                const raw_len = c.GetModuleFileNameA(null, &exe_path_buf, 1024);
+                var base_dir: []const u8 = "";
+                var parent_dir: []const u8 = "";
+                if (raw_len > 0 and raw_len < 1024) {
+                    const exe_full = exe_path_buf[0..raw_len];
+                    if (std.mem.lastIndexOfScalar(u8, exe_full, '\\')) |last_slash| {
+                        base_dir = exe_full[0 .. last_slash + 1];
+                        const base_no_trail = exe_full[0..last_slash];
+                        if (std.mem.lastIndexOfScalar(u8, base_no_trail, '\\')) |parent_slash| {
+                            parent_dir = exe_full[0 .. parent_slash + 1];
+                        }
+                    }
+                }
+
+                const search_dirs = [_][]const u8{ parent_dir, base_dir, "" };
+                for (search_dirs) |sdir| {
+                    var full_app_p: [1024]u8 = undefined;
+                    const p_str = if (sdir.len > 0)
+                        std.fmt.bufPrintZ(&full_app_p, "{s}app", .{sdir}) catch continue
+                    else
+                        "app";
+
+                    var app_dir = cwd.openDir(io, p_str, .{ .iterate = true }) catch continue;
+                    defer app_dir.close(io);
+
+                    var iter = app_dir.iterate();
+                    while (iter.next(io) catch null) |entry| {
+                        if (entry.kind == .file) {
+                            if (app_dir.statFile(io, entry.name, .{})) |st| {
+                                const ns = st.mtime.toNanoseconds();
+                                if (ns > max_mtime) max_mtime = ns;
+                            } else |_| {}
+                        }
+                    }
+                    if (max_mtime > 0) break;
+                }
+
+                if (self.last_app_mtime > 0 and max_mtime > self.last_app_mtime) {
+                    std.log.info("⚡ In-Window Hot Reload -> Reloading Web View...", .{});
+                    self.loadFile("app/index.html") catch |err| {
+                        std.log.err("Failed to reload HTML: {s}", .{@errorName(err)});
+                    };
+                }
+                if (max_mtime > 0) {
+                    self.last_app_mtime = max_mtime;
+                }
+            }
 
             // Memory Purge: Every 120 ticks (~1.0s at 120 FPS)
             if (self.update_counter >= 120) {
@@ -385,6 +443,7 @@ pub const UltralightBridge = struct {
             .view = view,
             .update_counter = 0,
             .config = cfg,
+            .last_app_mtime = 0,
         };
 
         c.ulAppSetUpdateCallback(app, onUpdate, @ptrCast(self));
