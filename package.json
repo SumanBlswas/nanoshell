@@ -1,0 +1,41 @@
+{
+  "name": "nanoshell",
+  "version": "1.2.1",
+  "description": "Hyper-lightweight 17MB RAM, 120 FPS native desktop application framework & runtime engine created by Suman Biswas",
+  "main": "zig-out/bin/example_app.exe",
+  "bin": {
+    "nanoshell": "cli/index.js",
+    "create-nanoshell-app": "cli/index.js"
+  },
+  "readme": "README.md",
+  "files": [
+    "cli/",
+    "zig-out/bin/*.exe",
+    "zig-out/bin/*.dll",
+    "vendor/bin/",
+    "vendor/resources/",
+    "example_app/",
+    "SKILL.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "zig build -Doptimize=ReleaseFast",
+    "start": "zig-out/bin/example_app.exe",
+    "init": "zig-out/bin/nanoshell.exe init"
+  },
+  "keywords": [
+    "nanoshell",
+    "desktop",
+    "gui",
+    "framework",
+    "electron-alternative",
+    "native",
+    "zig",
+    "webkit",
+    "ultralight",
+    "lightweight",
+    "suman-biswas"
+  ],
+  "author": "Suman Biswas <suman@zeroui.dev>",
+  "license": "MIT"
+}

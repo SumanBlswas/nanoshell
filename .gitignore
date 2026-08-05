@@ -1,0 +1,35 @@
+# Node dependencies
+node_modules/
+
+# npm package output
+/dist
+
+# Zig build artifacts
+zig-cache/
+zig-out/
+*.o
+*.obj
+*.lib
+*.dll
+*.exe
+*.pdb
+
+# Generated files
+setup.iss
+
+# Editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# npm and package metadata
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Temporary files
+*.tmp
+*.log
+
+# Local CLI runtime artifacts
+bin/

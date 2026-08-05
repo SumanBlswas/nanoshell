@@ -1,0 +1,9 @@
+{
+  "name": "my-awesome-app",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "description": "Blazing fast desktop app created with NanoShell",
+  "icon": "assets\\icon.ico",
+  "url": "https://github.com",
+  "exe_name": "my-awesome-app.exe"
+}

@@ -1,0 +1,12 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <windows.h>
+#include <psapi.h>
+#include <Ultralight/CAPI/CAPI_Config.h>
+#include <Ultralight/CAPI/CAPI_Renderer.h>
+#include <Ultralight/CAPI/CAPI_View.h>
+#include <Ultralight/CAPI/CAPI_Surface.h>
+#include <Ultralight/CAPI/CAPI_Bitmap.h>
+#include <Ultralight/CAPI/CAPI_String.h>
+#include <AppCore/CAPI.h>

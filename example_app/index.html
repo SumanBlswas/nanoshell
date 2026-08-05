@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZeroUI Cyber System Control Center</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo-box">
+        <h1 class="logo-title">Zero<span>UI</span></h1>
+        <p class="tagline">Hyper-Native Engine</p>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-btn active" id="btn-overview">Overview</button>
+        <button class="nav-btn" id="btn-gpu">GPU Shaders</button>
+        <button class="nav-btn" id="btn-system">System Bridge</button>
+        <button class="nav-btn" id="btn-child-win">Settings Window</button>
+      </nav>
+
+      <div class="status-badge">
+        <span class="pulse-dot"></span>
+        <span id="fps-counter">120 FPS Locked</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <!-- Glassmorphic Header Card -->
+      <header class="glass-card header-card">
+        <div class="header-text">
+          <h2 id="view-title">ZeroUI System Control Center</h2>
+          <p id="view-desc">Browser-Free Native Engine (< 4ms Boot, 8.1MB RAM, 120 FPS GPU SDF Shaders)</p>
+        </div>
+        <button class="action-btn" id="btn-refresh">Refresh Diagnostics</button>
+      </header>
+
+      <!-- Grid Metric Cards -->
+      <section class="metrics-grid">
+        <div class="glass-card metric-card">
+          <span class="card-label">RAM Footprint</span>
+          <span class="card-value" id="val-ram">8.1 MB</span>
+          <span class="card-sub">Target < 10MB RSS</span>
+        </div>
+
+        <div class="glass-card metric-card">
+          <span class="card-label">Cold Boot Time</span>
+          <span class="card-value" id="val-boot">0.8 ms</span>
+          <span class="card-sub">Instant Snapshot Thaw</span>
+        </div>
+
+        <div class="glass-card metric-card">
+          <span class="card-label">IPC Latency</span>
+          <span class="card-value" id="val-ipc">0.00 ms</span>
+          <span class="card-sub">Zero-Copy SharedMemory</span>
+        </div>
+
+        <div class="glass-card metric-card">
+          <span class="card-label">Binary Executable</span>
+          <span class="card-value" id="val-binary">3.00 MB</span>
+          <span class="card-sub">Single Self-Contained Binary</span>
+        </div>
+      </section>
+
+      <!-- Action Panel -->
+      <section class="glass-card action-panel">
+        <h3>Native OS & Shell Controls</h3>
+        <div class="button-group">
+          <button class="btn-primary" id="btn-msgbox">Trigger Native Dialog</button>
+          <button class="btn-secondary" id="btn-progress">Set Taskbar Progress (85%)</button>
+          <button class="btn-accent" id="btn-open-settings">Open Child Settings Window</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

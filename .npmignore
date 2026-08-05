@@ -1,0 +1,7 @@
+.zig-cache/
+.git/
+.vscode/
+.idea/
+tmp/
+scratch/
+*.log

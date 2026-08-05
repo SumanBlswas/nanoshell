@@ -1,0 +1,10 @@
+{
+  "name": "ExampleApp",
+  "version": "1.0.0",
+  "author": "Suman Biswas",
+  "description": "A blazing-fast 17MB RAM native desktop app built with NanoShell",
+  "icon": "assets\\icon.ico",
+  "url": "https://github.com/suman/nanoshell",
+  "exe_name": "example_app.exe",
+  "show_fps": true
+}
