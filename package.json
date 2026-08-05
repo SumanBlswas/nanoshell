@@ -1,6 +1,6 @@
 {
   "name": "nanoshell",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "description": "Hyper-lightweight 17MB RAM, 120 FPS native desktop application framework & runtime engine created by Suman Biswas",
   "main": "zig-out/bin/example_app.exe",
   "bin": {

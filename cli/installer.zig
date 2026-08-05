@@ -193,9 +193,9 @@ pub fn generateIss(allocator: std.mem.Allocator, config: AppConfig) ![]const u8 
         \\Source: "bin\Ultralight.dll";     DestDir: "{{app}}"; Flags: ignoreversion
         \\Source: "bin\UltralightCore.dll"; DestDir: "{{app}}"; Flags: ignoreversion
         \\Source: "bin\WebCore.dll";        DestDir: "{{app}}"; Flags: ignoreversion
-        \\Source: "bin\vcruntime140.dll";   DestDir: "{{app}}"; Flags: ignoreversion skipifdoesntexist
-        \\Source: "bin\msvcp140.dll";       DestDir: "{{app}}"; Flags: ignoreversion skipifdoesntexist
-        \\Source: "bin\vcruntime140_1.dll"; DestDir: "{{app}}"; Flags: ignoreversion skipifdoesntexist
+        \\Source: "bin\vcruntime140.dll";   DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\msvcp140.dll";       DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\vcruntime140_1.dll"; DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
         \\
         \\; ICU Unicode data and TLS certs
         \\Source: "bin\icudt67l.dat"; DestDir: "{{app}}"; Flags: ignoreversion

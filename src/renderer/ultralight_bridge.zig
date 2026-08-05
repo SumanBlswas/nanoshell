@@ -277,7 +277,7 @@ pub const UltralightBridge = struct {
                 ;
                 const script_str = c.ulCreateStringUTF8(fps_js_code.ptr, fps_js_code.len);
                 defer c.ulDestroyString(script_str);
-                c.ulViewEvaluateScript(view, script_str, null);
+                _ = c.ulViewEvaluateScript(view, script_str, null);
                 std.log.info("⚡ Real-Time Floating FPS Debugger HUD Injected into Window!", .{});
             }
         }
