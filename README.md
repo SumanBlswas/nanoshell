@@ -137,3 +137,4 @@ NanoShell includes a built-in AI Agent Skill definition (`SKILL.md`). Any AI cod
 
 MIT License © Suman Biswas (NanoShell Creator)
 "# nanoshell" 
+# nanoshell
