@@ -66,24 +66,32 @@ function getNanoShell() {
   return null;
 }
 
+function addClick(id, handler) {
+  var el = document.getElementById(id);
+  if (el) {
+    el.addEventListener("click", handler);
+  }
+}
+
 function bootApp() {
   console.log("⚡ [NanoShell] App Booting...");
-  console.log("⚡ [NanoShell Transpiler Test]:", document.getElementById("val-cores")?.innerText ?? "Fallback");
+  const coresEl = document.getElementById("val-cores");
+  console.log("⚡ [NanoShell Boot Status]:", coresEl ? coresEl.innerText : "Ready");
 
   // 1. Tab Navigation via Standard addEventListener
   const navBtns = document.querySelectorAll(".nav-btn");
   const tabContents = document.querySelectorAll(".tab-content");
 
   navBtns.forEach(btn => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", function(e) {
       e.preventDefault();
-      const targetTab = btn.getAttribute("data-tab");
-      console.log("⚡ [NanoShell] Tab Clicked via addEventListener:", targetTab);
+      const targetTab = this.getAttribute("data-tab") || btn.getAttribute("data-tab");
+      console.log("⚡ [NanoShell] Tab Clicked:", targetTab);
 
       navBtns.forEach(b => b.classList.remove("active"));
       tabContents.forEach(c => c.classList.remove("active"));
 
-      btn.classList.add("active");
+      this.classList.add("active");
       const targetEl = document.getElementById(targetTab);
       if (targetEl) targetEl.classList.add("active");
     });
@@ -99,7 +107,7 @@ function bootApp() {
   }
 
   // Clear Output Button
-  document.getElementById("btn-clear-output")?.addEventListener("click", () => {
+  addClick("btn-clear-output", () => {
     if (outputEl) outputEl.innerText = "// Console cleared. Click any API button to test real Win32 kernel calls.";
   });
 
@@ -201,7 +209,11 @@ function bootApp() {
   function callNative(methodName, fn) {
     const ns = getNanoShell();
     if (!ns) {
-      logApi(methodName, { error: "NanoShell native C/Zig bridge not attached yet!" });
+      logApi(methodName, {
+        status: "Bridge Not Attached",
+        detail: "Native Win32 bridge is initializing. Please wait...",
+        workaround: "APIs will work as soon as the bridge connects."
+      });
       return;
     }
     try {
@@ -211,40 +223,40 @@ function bootApp() {
     }
   }
 
-  // 5. Bind All 38 Native APIs using standard addEventListener
-  document.getElementById("btn-quick-os")?.addEventListener("click", () => {
+  // 5. Bind All 38 Native APIs using addClick
+  addClick("btn-quick-os", () => {
     callNative("os.getInfo()", ns => logApi("os.getInfo()", JSON.parse(ns.os.getInfo())));
   });
 
-  document.getElementById("btn-quick-battery")?.addEventListener("click", () => {
+  addClick("btn-quick-battery", () => {
     callNative("power.getBatteryStatus()", ns => logApi("power.getBatteryStatus()", JSON.parse(ns.power.getBatteryStatus())));
   });
 
-  document.getElementById("btn-quick-gpu")?.addEventListener("click", () => {
+  addClick("btn-quick-gpu", () => {
     callNative("gpu.getInfo()", ns => logApi("gpu.getInfo()", JSON.parse(ns.gpu.getInfo())));
   });
 
-  document.getElementById("btn-quick-procs")?.addEventListener("click", () => {
+  addClick("btn-quick-procs", () => {
     callNative("process.list()", ns => logApi("process.list()", JSON.parse(ns.process.list())));
   });
 
   // TAB 2: Window & Effects
-  document.getElementById("btn-win-mica")?.addEventListener("click", () => {
+  addClick("btn-win-mica", () => {
     callNative("window.effects.setMica()", ns => logApi("window.effects.setMica(true)", { success: ns.window.effects.setMica(true), effect: "Windows 11 Native Mica" }));
   });
 
-  document.getElementById("btn-win-acrylic")?.addEventListener("click", () => {
+  addClick("btn-win-acrylic", () => {
     callNative("window.effects.setAcrylic()", ns => logApi("window.effects.setAcrylic(true)", { success: ns.window.effects.setAcrylic(true), effect: "Windows 10/11 Acrylic Blur" }));
   });
 
-  document.getElementById("btn-win-title")?.addEventListener("click", () => {
+  addClick("btn-win-title", () => {
     callNative("window.setTitle()", ns => {
       ns.window.setTitle("⚡ NanoShell Cyber Control Center [Active]");
       logApi("window.setTitle()", "Title bar updated via Win32 SetWindowTextA!");
     });
   });
 
-  document.getElementById("btn-win-center")?.addEventListener("click", () => {
+  addClick("btn-win-center", () => {
     callNative("window.center()", ns => {
       ns.window.center();
       logApi("window.center()", "Window moved to screen center!");
@@ -252,7 +264,7 @@ function bootApp() {
   });
 
   let isFull = false;
-  document.getElementById("btn-win-fullscreen")?.addEventListener("click", () => {
+  addClick("btn-win-fullscreen", () => {
     callNative("window.setFullscreen()", ns => {
       isFull = !isFull;
       ns.window.setFullscreen(isFull);
@@ -260,28 +272,28 @@ function bootApp() {
     });
   });
 
-  document.getElementById("btn-win-min")?.addEventListener("click", () => {
+  addClick("btn-win-min", () => {
     callNative("window.minimize()", ns => {
       ns.window.minimize();
       logApi("window.minimize()", "Window minimized via native Zig bridge");
     });
   });
 
-  document.getElementById("btn-win-max")?.addEventListener("click", () => {
+  addClick("btn-win-max", () => {
     callNative("window.maximize()", ns => {
       ns.window.maximize();
       logApi("window.maximize()", "Window maximized via native Zig bridge");
     });
   });
 
-  document.getElementById("btn-win-restore")?.addEventListener("click", () => {
+  addClick("btn-win-restore", () => {
     callNative("window.restore()", ns => {
       ns.window.restore();
       logApi("window.restore()", "Window restored via native Zig bridge");
     });
   });
 
-  document.getElementById("btn-win-close")?.addEventListener("click", () => {
+  addClick("btn-win-close", () => {
     callNative("window.close()", ns => {
       logApi("window.close()", "Closing application gracefully...");
       ns.window.close();
@@ -289,37 +301,37 @@ function bootApp() {
   });
 
   // TAB 3: FileSystem & Dialogs
-  document.getElementById("btn-dlg-open")?.addEventListener("click", () => {
+  addClick("btn-dlg-open", () => {
     callNative("dialog.showOpen()", ns => logApi("dialog.showOpen()", { selectedPath: ns.dialog.showOpen() || "Cancelled" }));
   });
 
-  document.getElementById("btn-dlg-save")?.addEventListener("click", () => {
+  addClick("btn-dlg-save", () => {
     callNative("dialog.showSave()", ns => logApi("dialog.showSave()", { savePath: ns.dialog.showSave() || "Cancelled" }));
   });
 
-  document.getElementById("btn-fs-read")?.addEventListener("click", () => {
+  addClick("btn-fs-read", () => {
     callNative("fs.readFile()", ns => {
       const file = ns.dialog.showOpen();
       if (file) logApi("fs.readFile()", { file: file, content: ns.fs.readFile(file) });
     });
   });
 
-  document.getElementById("btn-fs-write")?.addEventListener("click", () => {
+  addClick("btn-fs-write", () => {
     callNative("fs.writeFile()", ns => {
       const ok = ns.fs.writeFile("nanoshell_test.txt", "Saved cleanly via 100% Genuine Win32 C fopen/fwrite!");
       logApi("fs.writeFile()", { file: "nanoshell_test.txt", success: ok });
     });
   });
 
-  document.getElementById("btn-fs-readdir")?.addEventListener("click", () => {
+  addClick("btn-fs-readdir", () => {
     callNative("fs.readDir()", ns => logApi("fs.readDir('.')", JSON.parse(ns.fs.readDir("."))));
   });
 
-  document.getElementById("btn-fs-mkdir")?.addEventListener("click", () => {
+  addClick("btn-fs-mkdir", () => {
     callNative("fs.mkdir()", ns => logApi("fs.mkdir('nanoshell_test_dir')", { success: ns.fs.mkdir("nanoshell_test_dir") }));
   });
 
-  document.getElementById("btn-dlg-msg")?.addEventListener("click", () => {
+  addClick("btn-dlg-msg", () => {
     callNative("dialog.showMessage()", ns => {
       ns.dialog.showMessage("NanoShell Native Alert", "Triggered 100% Win32 MessageBoxA Dialog!");
       logApi("dialog.showMessage()", "Alert displayed via Win32 MessageBoxA.");
@@ -327,19 +339,19 @@ function bootApp() {
   });
 
   // TAB 4: Process & Shell
-  document.getElementById("btn-proc-list")?.addEventListener("click", () => {
+  addClick("btn-proc-list", () => {
     callNative("process.list()", ns => logApi("process.list()", JSON.parse(ns.process.list())));
   });
 
-  document.getElementById("btn-proc-spawn")?.addEventListener("click", () => {
+  addClick("btn-proc-spawn", () => {
     callNative("process.spawn()", ns => logApi("process.spawn('notepad.exe')", JSON.parse(ns.process.spawn("notepad.exe"))));
   });
 
-  document.getElementById("btn-shell-exec")?.addEventListener("click", () => {
+  addClick("btn-shell-exec", () => {
     callNative("shell.exec()", ns => logApi("shell.exec('dir')", JSON.parse(ns.shell.exec("dir"))));
   });
 
-  document.getElementById("btn-shell-url")?.addEventListener("click", () => {
+  addClick("btn-shell-url", () => {
     callNative("shell.openExternal()", ns => {
       ns.shell.openExternal("https://github.com");
       logApi("shell.openExternal()", "Opened https://github.com in default browser via ShellExecuteA.");
@@ -347,26 +359,26 @@ function bootApp() {
   });
 
   // TAB 5: System & Hardware
-  document.getElementById("btn-sys-info")?.addEventListener("click", () => {
+  addClick("btn-sys-info", () => {
     callNative("os.getInfo()", ns => logApi("os.getInfo()", JSON.parse(ns.os.getInfo())));
   });
 
-  document.getElementById("btn-clip-write")?.addEventListener("click", () => {
+  addClick("btn-clip-write", () => {
     callNative("clipboard.writeText()", ns => {
       const ok = ns.clipboard.writeText("Copied from NanoShell v1.7.0 Master Control Center!");
       logApi("clipboard.writeText()", { success: ok, text: "Copied to Win32 Clipboard!" });
     });
   });
 
-  document.getElementById("btn-clip-read")?.addEventListener("click", () => {
+  addClick("btn-clip-read", () => {
     callNative("clipboard.readText()", ns => logApi("clipboard.readText()", { textFromClipboard: ns.clipboard.readText() }));
   });
 
-  document.getElementById("btn-screen-monitors")?.addEventListener("click", () => {
+  addClick("btn-screen-monitors", () => {
     callNative("screen.getMonitors()", ns => logApi("screen.getMonitors()", JSON.parse(ns.screen.getMonitors())));
   });
 
-  document.getElementById("btn-notif-show")?.addEventListener("click", () => {
+  addClick("btn-notif-show", () => {
     callNative("notification.show()", ns => {
       ns.notification.show("NanoShell Toast", "Native Windows Action Center Notification!");
       logApi("notification.show()", "Notification triggered via Win32.");
@@ -374,7 +386,7 @@ function bootApp() {
   });
 
   // TAB 6: Exclusive Engines
-  document.getElementById("btn-shm-test")?.addEventListener("click", () => {
+  addClick("btn-shm-test", () => {
     callNative("shm (Shared Memory)", ns => {
       const cOk = ns.shm.createRegion("nano_shm_channel", 65536);
       const wOk = ns.shm.write("nano_shm_channel", "Zero-Copy 120 FPS C-RAM Memory Buffer Payload");
@@ -383,31 +395,31 @@ function bootApp() {
     });
   });
 
-  document.getElementById("btn-snap-freeze")?.addEventListener("click", () => {
+  addClick("btn-snap-freeze", () => {
     callNative("snapshot.freezeState()", ns => {
       window.__nanoshell_state = { user: "Admin", timestamp: Date.now(), activeModule: "EngineTester" };
       logApi("snapshot.freezeState()", { success: ns.snapshot.freezeState("nanoshell.snap"), savedFile: "nanoshell.snap" });
     });
   });
 
-  document.getElementById("btn-snap-thaw")?.addEventListener("click", () => {
+  addClick("btn-snap-thaw", () => {
     callNative("snapshot.thawState()", ns => {
       logApi("snapshot.thawState()", { coldBootTime: "< 1ms", restoredState: JSON.parse(ns.snapshot.thawState("nanoshell.snap") || "{}") });
     });
   });
 
-  document.getElementById("btn-gpu-info")?.addEventListener("click", () => {
+  addClick("btn-gpu-info", () => {
     callNative("gpu.getInfo()", ns => logApi("gpu.getInfo()", JSON.parse(ns.gpu.getInfo())));
   });
 
-  document.getElementById("btn-gpu-fps120")?.addEventListener("click", () => {
+  addClick("btn-gpu-fps120", () => {
     callNative("gpu.setFPSCap(120)", ns => {
       ns.gpu.setFPSCap(120);
       logApi("gpu.setFPSCap(120)", "Capped to 120 FPS!");
     });
   });
 
-  document.getElementById("btn-gpu-fps60")?.addEventListener("click", () => {
+  addClick("btn-gpu-fps60", () => {
     callNative("gpu.setFPSCap(60)", ns => {
       ns.gpu.setFPSCap(60);
       logApi("gpu.setFPSCap(60)", "Capped to 60 FPS!");

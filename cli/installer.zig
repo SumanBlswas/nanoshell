@@ -89,6 +89,18 @@ fn getEnvVarDynamic(allocator: std.mem.Allocator, key: []const u8) ?[]const u8 {
 pub fn findIscc(allocator: std.mem.Allocator) ?[]const u8 {
     const io = std.Io.Threaded.global_single_threaded.io();
 
+    // 1. Check local bundled ISCC (in npm package vendor/bin/iscc/ISCC.exe or bin/iscc/ISCC.exe)
+    const local_iscc_paths = [_][]const u8{
+        "vendor\\bin\\iscc\\ISCC.exe",
+        "bin\\iscc\\ISCC.exe",
+        "..\\vendor\\bin\\iscc\\ISCC.exe",
+    };
+    for (local_iscc_paths) |p| {
+        if (std.Io.Dir.accessAbsolute(io, p, .{})) |_| {
+            return allocator.dupe(u8, p) catch null;
+        } else |_| {}
+    }
+
     const env_keys = [_][]const u8{ "LOCALAPPDATA", "PROGRAMFILES", "PROGRAMFILES(X86)" };
     const sub_paths = [_][]const u8{
         "\\Programs\\Inno Setup 6\\ISCC.exe",
@@ -185,25 +197,35 @@ pub fn generateIss(allocator: std.mem.Allocator, config: AppConfig) ![]const u8 
         \\Name: "desktopicon"; Description: "{{cm:CreateDesktopIcon}}"; GroupDescription: "{{cm:AdditionalIcons}}"; Flags: unchecked
         \\
         \\[Files]
-        \\; Main executable
-        \\Source: "bin\{{#AppExeName}}"; DestDir: "{{app}}"; Flags: ignoreversion
+        \\; Main executable (searches dist, root, zig-out\bin, and bin)
+        \\Source: "dist\{{#AppName}}.exe";          DestDir: "{{app}}"; DestName: "{{#AppExeName}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "example_app.exe";                 DestDir: "{{app}}"; DestName: "{{#AppExeName}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "zig-out\bin\example_app.exe";     DestDir: "{{app}}"; DestName: "{{#AppExeName}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\{{#AppExeName}}";            DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
         \\
-        \\; NanoShell Runtime DLLs & Portable C++ Runtimes
-        \\Source: "bin\AppCore.dll";        DestDir: "{{app}}"; Flags: ignoreversion
-        \\Source: "bin\Ultralight.dll";     DestDir: "{{app}}"; Flags: ignoreversion
-        \\Source: "bin\UltralightCore.dll"; DestDir: "{{app}}"; Flags: ignoreversion
-        \\Source: "bin\WebCore.dll";        DestDir: "{{app}}"; Flags: ignoreversion
-        \\Source: "bin\vcruntime140.dll";   DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
-        \\Source: "bin\msvcp140.dll";       DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
-        \\Source: "bin\vcruntime140_1.dll"; DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\; NanoShell Runtime DLLs & Portable C++ Runtimes (vendor\lib and bin)
+        \\Source: "vendor\lib\AppCore.dll";         DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "vendor\lib\Ultralight.dll";      DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "vendor\lib\UltralightCore.dll";  DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "vendor\lib\WebCore.dll";         DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "vendor\lib\icudt67l.dat";        DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "vendor\lib\cacert.pem";          DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "vendor\lib\resources\*";         DestDir: "{{app}}\resources"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
         \\
-        \\; ICU Unicode data and TLS certs
-        \\Source: "bin\icudt67l.dat"; DestDir: "{{app}}"; Flags: ignoreversion
-        \\Source: "bin\cacert.pem";   DestDir: "{{app}}"; Flags: ignoreversion
-        \\Source: "bin\resources\*";  DestDir: "{{app}}\resources"; Flags: ignoreversion recursesubdirs createallsubdirs
+        \\Source: "bin\AppCore.dll";                DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\Ultralight.dll";             DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\UltralightCore.dll";         DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\WebCore.dll";                DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\vcruntime140.dll";           DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\msvcp140.dll";               DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\vcruntime140_1.dll";         DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\icudt67l.dat";               DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\cacert.pem";                 DestDir: "{{app}}"; Flags: ignoreversion skipifsourcedoesntexist
+        \\Source: "bin\resources\*";                DestDir: "{{app}}\resources"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
         \\
         \\; App HTML / CSS / JS assets
-        \\Source: "app\*"; DestDir: "{{app}}\app"; Flags: ignoreversion recursesubdirs createallsubdirs
+        \\Source: "example_app\*";                  DestDir: "{{app}}\app"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
+        \\Source: "app\*";                          DestDir: "{{app}}\app"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
         \\
         \\[Icons]
         \\Name: "{{group}}\\{{#AppName}}";                         Filename: "{{app}}\\{{#AppExeName}}"; WorkingDir: "{{app}}"
@@ -232,12 +254,13 @@ pub fn generateIss(allocator: std.mem.Allocator, config: AppConfig) ![]const u8 
 /// Main: load config, write .iss, find ISCC, auto-compile.
 pub fn run(allocator: std.mem.Allocator) !void {
     const io = std.Io.Threaded.global_single_threaded.io();
-    std.log.info("NanoShell Installer Generator v1.0.2", .{});
+    var config = loadConfig(allocator) catch AppConfig{};
+    defer config.deinit(allocator);
+
+    std.log.info("NanoShell Installer Generator v{s}", .{config.version});
     std.log.info("Powered by Inno Setup . by Suman Biswas", .{});
 
     std.log.info("[1/4] Reading nanoshell.json...", .{});
-    var config = try loadConfig(allocator);
-    defer config.deinit(allocator);
     std.log.info("App: {s} v{s} by {s} ({s})", .{ config.name, config.version, config.author, config.exe_name });
 
     std.log.info("[2/4] Generating setup.iss...", .{});

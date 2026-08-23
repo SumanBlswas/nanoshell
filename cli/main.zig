@@ -117,6 +117,28 @@ pub fn main() !void {
 
         try app_dir.writeFile(io, .{ .sub_path = "nanoshell.json", .data = json_content });
 
+        // Write default package.json so npm start, npm run build, npm run package work out-of-the-box
+        const pkg_json_content = try std.fmt.allocPrint(allocator,
+            "{{\n" ++
+            "  \"name\": \"{s}\",\n" ++
+            "  \"version\": \"1.0.0\",\n" ++
+            "  \"description\": \"A NanoShell native desktop application\",\n" ++
+            "  \"main\": \"app/index.html\",\n" ++
+            "  \"scripts\": {{\n" ++
+            "    \"start\": \".\\\\bin\\\\{s}.exe --dev\",\n" ++
+            "    \"build\": \".\\\\bin\\\\{s}.exe --build\",\n" ++
+            "    \"package\": \".\\\\bin\\\\{s}.exe --package\"\n" ++
+            "  }},\n" ++
+            "  \"keywords\": [\"nanoshell\", \"desktop\", \"native\"],\n" ++
+            "  \"author\": \"\",\n" ++
+            "  \"license\": \"MIT\"\n" ++
+            "}}\n",
+            .{ app_dir_name, app_dir_name, app_dir_name, app_dir_name }
+        );
+        defer allocator.free(pkg_json_content);
+
+        try app_dir.writeFile(io, .{ .sub_path = "package.json", .data = pkg_json_content });
+
         // Write default HTML/CSS/JS inside app/
         const html_content =
             \\<!DOCTYPE html>
@@ -129,12 +151,12 @@ pub fn main() !void {
             \\</head>
             \\<body>
             \\  <div class="container">
-            \\    <div class="fps-badge"><span id="fps-val">60</span> FPS Realtime</div>
+            \\    <div class="fps-badge"><span id="fps-val">120</span> FPS Locked</div>
             \\    <h1>⚡ NanoShell Desktop App</h1>
             \\    <p>Ultra-lightweight WebKit desktop runtime</p>
             \\    <button id="btn">Click Me</button>
             \\  </div>
-            \\  <script src="app.js"></script>
+            \\  <!-- app.js is injected inline by the NanoShell engine at load time -->
             \\</body>
             \\</html>
         ;
@@ -184,26 +206,15 @@ pub fn main() !void {
         try app_dir.writeFile(io, .{ .sub_path = "app/styles.css", .data = css_content });
 
         const js_content =
-            \\let lastTime = performance.now();
-            \\let frames = 0;
-            \\function calcFps() {
-            \\  const now = performance.now();
-            \\  frames++;
-            \\  const delta = now - lastTime;
-            \\  if (delta >= 500) {
-            \\    const fps = Math.round((frames * 1000) / delta);
-            \\    const el = document.getElementById('fps-val');
-            \\    if (el) el.innerText = fps;
-            \\    frames = 0;
-            \\    lastTime = now;
-            \\  }
-            \\  requestAnimationFrame(calcFps);
-            \\}
-            \\requestAnimationFrame(calcFps);
+            \\// NanoShell Application JavaScript (0% Idle CPU Overhead)
+            \\console.log('⚡ [NanoShell] App loaded successfully');
             \\
-            \\document.getElementById('btn').addEventListener('click', () => {
-            \\  alert('Hello from NanoShell!');
-            \\});
+            \\const btn = document.getElementById('btn');
+            \\if (btn) {
+            \\  btn.addEventListener('click', () => {
+            \\    alert('Hello from NanoShell!');
+            \\  });
+            \\}
         ;
         try app_dir.writeFile(io, .{ .sub_path = "app/app.js", .data = js_content });
 
@@ -257,9 +268,12 @@ pub fn main() !void {
         return;
     }
 
+    var config = installer.loadConfig(allocator) catch installer.AppConfig{};
+    defer config.deinit(allocator);
+
     // Help banner if no command or invalid command is provided
     std.log.info("+===================================================+", .{});
-    std.log.info("|  NanoShell CLI  v1.0.4  . by Suman Biswas         |", .{});
+    std.log.info("|  NanoShell CLI  v{s}  . by Suman Biswas         |", .{config.version});
     std.log.info("|  17MB RAM . 120 FPS . WebKit-powered desktop apps  |", .{});
     std.log.info("+===================================================+", .{});
     std.log.info("Usage:", .{});

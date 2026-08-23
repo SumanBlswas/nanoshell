@@ -6,7 +6,12 @@ const shell_taskbar = @import("shell/taskbar_dock.zig");
 const shell_tray = @import("shell/systray.zig");
 const ultralight_mod = @import("renderer/ultralight_bridge.zig");
 
+const c = @cImport({
+    @cInclude("stdio.h");
+});
+
 pub fn main() !void {
+
     std.log.info("=================================================================", .{});
     std.log.info("   ZeroUI Showcase Application: Cyber System Control Center", .{});
     std.log.info("=================================================================", .{});
@@ -24,20 +29,37 @@ pub fn main() !void {
     var shm_matrix = shm_mod.SharedMemoryMatrix.init("ZeroUI_ExampleApp_IPC", 1024 * 1024);
     _ = try shm_matrix.createMapping();
 
-    // Check command line arguments for --dev flag
+    const installer_mod = @import("installer");
+
+    // Check command line arguments for --dev, --build, or --package flags
     const WinApi = struct {
         pub extern "kernel32" fn GetCommandLineA() callconv(.winapi) [*:0]const u8;
     };
-    var is_dev_mode = false;
     const cmd_line = std.mem.span(WinApi.GetCommandLineA());
+
+    if (std.mem.indexOf(u8, cmd_line, "--package") != null) {
+        std.log.info("⚡ NanoShell Installer Generator Flag Activated", .{});
+        try installer_mod.run(allocator);
+        return;
+    }
+
+    if (std.mem.indexOf(u8, cmd_line, "--build") != null) {
+        std.log.info("⚡ NanoShell Build Complete", .{});
+        return;
+    }
+
+    var is_dev_mode = false;
     if (std.mem.indexOf(u8, cmd_line, "--dev") != null) {
         is_dev_mode = true;
     }
 
     // 4. Initialize 100% Chrome-Identical Native Window via AppCore Engine FIRST
-    var ultralight_bridge = try ultralight_mod.UltralightBridge.init(allocator, 1280, 720, .{
+    var ultralight_bridge = ultralight_mod.UltralightBridge.init(allocator, 1280, 720, .{
         .enable_hot_reload = is_dev_mode,
-    });
+    }) catch |err| {
+        std.log.err("FATAL: UltralightBridge.init failed with error: {s}", .{@errorName(err)});
+        return err;
+    };
     defer ultralight_bridge.deinit();
 
     // Dynamically load any developer HTML file or URL from disk

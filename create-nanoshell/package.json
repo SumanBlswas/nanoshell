@@ -1,0 +1,21 @@
+{
+  "name": "create-nanoshell",
+  "version": "1.8.7",
+  "description": "Scaffold a new NanoShell native desktop application",
+  "main": "index.js",
+  "bin": {
+    "create-nanoshell": "index.js"
+  },
+  "dependencies": {
+    "nanoshell": "^1.8.7"
+  },
+  "keywords": [
+    "create-nanoshell",
+    "nanoshell",
+    "desktop",
+    "gui",
+    "framework"
+  ],
+  "author": "Suman Biswas <suman@zeroui.dev>",
+  "license": "MIT"
+}

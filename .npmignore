@@ -1,7 +1,44 @@
+# Build cache & compiler artifacts
 .zig-cache/
+zig-out/**/*.pdb
+zig-out/**/*.snap
+zig-out/**/*.log
+
+# Source code (not needed by consumers)
+src/
+vendor/include/
+vendor/lib/
+
+# Version control
 .git/
+.gitignore
+.agents/
+
+# IDE / editor
 .vscode/
 .idea/
+
+# Logs & debug output
+*.log
+*.txt
+js_console.log
+app_stdout.log
+app_stderr.log
+debug_trace.log
+nanoshell_debug.log
+console_output.txt
+
+# Old packed tarballs
+*.tgz
+
+# Docs & dev-only
+docs/
+SKILL.md
+setup.iss
+app.rc
+app.manifest
+
+# Temp
 tmp/
 scratch/
-*.log
+my-awesome-app/

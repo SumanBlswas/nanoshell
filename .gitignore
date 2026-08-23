@@ -1,10 +1,17 @@
-# Node dependencies
+# Node dependencies & lockfiles
 node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-# npm package output
-/dist
+# Build & packaging output
+dist/
+bin/
+*.tgz
+setup.iss
 
-# Zig build artifacts
+# Zig compiler build artifacts & cache
+.zig-cache/
 zig-cache/
 zig-out/
 *.o
@@ -13,23 +20,27 @@ zig-out/
 *.dll
 *.exe
 *.pdb
+*.snap
 
-# Generated files
-setup.iss
+# Logs, trace & scratch files
+*.log
+*.txt
+console_output.txt
+js_console.log
+app_stdout.log
+app_stderr.log
+debug_trace.log
+nanoshell_debug.log
 
-# Editor and OS files
+# Temporary scaffolding test directories
+my-awesome-app/
+test-interactive-app/
+tmp/
+scratch/
+
+# Editor & OS metadata
 .vscode/
+.idea/
 .DS_Store
 Thumbs.db
 
-# npm and package metadata
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# Temporary files
-*.tmp
-*.log
-
-# Local CLI runtime artifacts
-bin/

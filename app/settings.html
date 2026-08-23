@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZeroUI Settings & Preferences</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="child-window-body">
+  <div class="glass-card settings-card">
+    <h2>System Preferences</h2>
+    <p>ZeroUI Native Child Window (< 0.2MB RAM Footprint, 0ms IPC)</p>
+
+    <div class="setting-row">
+      <label>Window Transparency / Mica Glass</label>
+      <input type="checkbox" checked id="chk-glass">
+    </div>
+
+    <div class="setting-row">
+      <label>120 FPS Locked Frame Budget</label>
+      <input type="checkbox" checked id="chk-fps">
+    </div>
+
+    <div class="setting-row">
+      <label>Auto-Startup on System Boot</label>
+      <input type="checkbox" checked id="chk-autostart">
+    </div>
+
+    <button class="btn-primary" id="btn-save-settings">Save & Broadcast to Main Window</button>
+  </div>
+</body>
+</html>

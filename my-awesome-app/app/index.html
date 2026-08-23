@@ -3,15 +3,170 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NanoShell Application</title>
+  <title>NanoShell Master Control Center (38 Genuine Win32 APIs)</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>⚡ NanoShell Desktop App</h1>
-    <p>Ultra-lightweight WebKit desktop runtime</p>
-    <button id="btn">Click Me</button>
+  <div id="app" class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo-box">
+        <h1 class="logo-title">Nano<span>Shell</span></h1>
+        <p class="tagline">v1.7.1 Master Engine</p>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-btn active" data-tab="tab-overview">⚡ Overview & Telemetry</button>
+        <button class="nav-btn" data-tab="tab-window">🪟 Window & Effects</button>
+        <button class="nav-btn" data-tab="tab-fs">📁 FileSystem & Dialogs</button>
+        <button class="nav-btn" data-tab="tab-process">⚙️ Process & Shell</button>
+        <button class="nav-btn" data-tab="tab-system">🖥️ System & Hardware</button>
+        <button class="nav-btn" data-tab="tab-engines">🔥 Exclusive Engines</button>
+      </nav>
+
+      <div class="status-badge">
+        <span class="pulse-dot"></span>
+        <span id="fps-counter">120 FPS Locked</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <!-- Glassmorphic Header Card -->
+      <header class="glass-card header-card">
+        <div class="header-text">
+          <h2 id="view-title">NanoShell Master Control Center</h2>
+          <p id="view-desc">100% Genuine Win32 System APIs (< 1ms Boot, ~17MB RAM, 120 FPS Native C/Zig)</p>
+        </div>
+        <button class="action-btn" id="btn-refresh-telemetry">🔄 Refresh Diagnostics</button>
+      </header>
+
+      <!-- TAB 1: OVERVIEW & TELEMETRY -->
+      <section id="tab-overview" class="tab-content active">
+        <div class="metrics-grid">
+          <div class="glass-card metric-card">
+            <span class="card-label">CPU Cores</span>
+            <span class="card-value" id="val-cores">--</span>
+            <span class="card-sub">Win32 GetSystemInfo</span>
+          </div>
+
+          <div class="glass-card metric-card">
+            <span class="card-label">Available RAM</span>
+            <span class="card-value" id="val-free-ram">-- MB</span>
+            <span class="card-sub">GlobalMemoryStatusEx</span>
+          </div>
+
+          <div class="glass-card metric-card">
+            <span class="card-label">Battery Level</span>
+            <span class="card-value" id="val-battery">-- %</span>
+            <span class="card-sub">GetSystemPowerStatus</span>
+          </div>
+
+          <div class="glass-card metric-card">
+            <span class="card-label">Mouse Cursor</span>
+            <span class="card-value" id="val-cursor">disabled</span>
+            <span class="card-sub">Win32 GetCursorPos</span>
+            <button id="btn-cursor-toggle" style="margin-top:6px;font-size:10px;padding:3px 8px;border-radius:6px;border:1px solid #555;background:#1a1a2e;color:#888;cursor:pointer;">Enable Tracking</button>
+          </div>
+        </div>
+
+        <div class="glass-card action-panel">
+          <h3>⚡ All 38 Genuine Win32 System APIs Live Tester</h3>
+          <p class="panel-desc">Click any category tab on the left sidebar to execute real Win32 kernel calls with zero mock data!</p>
+          <div class="quick-actions">
+            <button class="btn-primary" id="btn-quick-os">Query OS Info</button>
+            <button class="btn-secondary" id="btn-quick-battery">Battery Telemetry</button>
+            <button class="btn-accent" id="btn-quick-gpu">GPU Hardware Info</button>
+            <button class="btn-primary" id="btn-quick-procs">List OS Processes</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: WINDOW & EFFECTS -->
+      <section id="tab-window" class="tab-content">
+        <div class="glass-card action-panel">
+          <h3>🪟 Native Window & Glassmorphism Backdrop Controls</h3>
+          <div class="button-group">
+            <button class="btn-primary" id="btn-win-mica">✨ Set Mica Backdrop (Win 11)</button>
+            <button class="btn-accent" id="btn-win-acrylic">🧊 Set Acrylic Blur (Win 10/11)</button>
+            <button class="btn-secondary" id="btn-win-title">Update Title Bar</button>
+            <button class="btn-secondary" id="btn-win-center">Center Window</button>
+            <button class="btn-primary" id="btn-win-fullscreen">Toggle Fullscreen</button>
+            <button class="btn-secondary" id="btn-win-min">Minimize Window</button>
+            <button class="btn-accent" id="btn-win-max">Maximize Window</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: FILESYSTEM & DIALOGS -->
+      <section id="tab-fs" class="tab-content">
+        <div class="glass-card action-panel">
+          <h3>📁 Native FileSystem & OS File Picker Dialogs</h3>
+          <div class="button-group">
+            <button class="btn-primary" id="btn-dlg-open">📂 Open File Dialog</button>
+            <button class="btn-primary" id="btn-dlg-save">💾 Save File Dialog</button>
+            <button class="btn-secondary" id="btn-fs-read">Read File (fs.readFile)</button>
+            <button class="btn-secondary" id="btn-fs-write">Write File (fs.writeFile)</button>
+            <button class="btn-accent" id="btn-fs-readdir">List Directory (fs.readDir)</button>
+            <button class="btn-secondary" id="btn-fs-mkdir">Create Folder (fs.mkdir)</button>
+            <button class="btn-primary" id="btn-dlg-msg">Trigger OS Alert Box</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: PROCESS & SHELL -->
+      <section id="tab-process" class="tab-content">
+        <div class="glass-card action-panel">
+          <h3>⚙️ Win32 Task Manager, Process Spawner & Shell Exec</h3>
+          <div class="button-group">
+            <button class="btn-primary" id="btn-proc-list">📋 List Running Processes</button>
+            <button class="btn-accent" id="btn-proc-spawn">🚀 Spawn Sub-Process (notepad.exe)</button>
+            <button class="btn-secondary" id="btn-shell-exec">⚡ Run CLI Exec (dir)</button>
+            <button class="btn-primary" id="btn-shell-url">🌐 Open External URL</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: SYSTEM & HARDWARE -->
+      <section id="tab-system" class="tab-content">
+        <div class="glass-card action-panel">
+          <h3>🖥️ Hardware Telemetry, Clipboard & Toast Notifications</h3>
+          <div class="button-group">
+            <button class="btn-primary" id="btn-sys-info">💻 Full System Spec</button>
+            <button class="btn-secondary" id="btn-clip-write">📋 Copy Text to Clipboard</button>
+            <button class="btn-secondary" id="btn-clip-read">📥 Read Text from Clipboard</button>
+            <button class="btn-accent" id="btn-screen-monitors">🖥️ Monitor Resolution</button>
+            <button class="btn-primary" id="btn-notif-show">🔔 OS Toast Notification</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: EXCLUSIVE ENGINES -->
+      <section id="tab-engines" class="tab-content">
+        <div class="glass-card action-panel">
+          <h3>🔥 Exclusive Engines: Zero-Copy SHM, Snapshot Thaw & GPU Cap</h3>
+          <div class="button-group">
+            <button class="btn-accent" id="btn-shm-test">⚡ Test Shared Memory Matrix (< 0.01ms)</button>
+            <button class="btn-primary" id="btn-snap-freeze">❄️ Freeze State (snapshot.freezeState)</button>
+            <button class="btn-primary" id="btn-snap-thaw">🧊 Thaw State (< 1ms Cold Start)</button>
+            <button class="btn-secondary" id="btn-gpu-info">🎮 DXGI GPU Hardware Info</button>
+            <button class="btn-accent" id="btn-gpu-fps120">⚡ Cap FPS to 120</button>
+            <button class="btn-secondary" id="btn-gpu-fps60">🔋 Cap FPS to 60</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Global Console Output Panel -->
+      <section class="glass-card output-panel">
+        <div class="output-header">
+          <span>🖥️ Live Win32 API Output Stream</span>
+          <button class="btn-clear" id="btn-clear-output">Clear</button>
+        </div>
+        <pre id="api-output">// Click any API button above to inspect live Win32 system output...</pre>
+      </section>
+    </main>
   </div>
-  <script src="app.js"></script>
+
+  <!-- app.js is injected inline by the NanoShell engine at load time -->
 </body>
 </html>

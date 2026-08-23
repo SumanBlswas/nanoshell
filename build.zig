@@ -11,6 +11,13 @@ pub fn build(b: *std.Build) void {
     });
     const optimize = b.standardOptimizeOption(.{});
 
+    const installer_mod = b.createModule(.{
+        .root_source_file = b.path("cli/installer.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+
     // ZeroUI / NanoShell Application Executable Target
     const example_app_exe = b.addExecutable(.{
         .name = "example_app",
@@ -19,6 +26,9 @@ pub fn build(b: *std.Build) void {
             .target = target,
             .optimize = optimize,
             .link_libc = true,
+            .imports = &.{
+                .{ .name = "installer", .module = installer_mod },
+            },
         }),
     });
     example_app_exe.root_module.addIncludePath(b.path("vendor/include"));
@@ -77,16 +87,16 @@ pub fn build(b: *std.Build) void {
     });
     b.installArtifact(cli_exe);
 
-    // Install Example App HTML/CSS/JS files to bin/assets/ and bin/app/
-    const install_assets_html = b.addInstallFile(b.path("example_app/index.html"), "bin/assets/index.html");
-    const install_assets_css = b.addInstallFile(b.path("example_app/styles.css"), "bin/assets/styles.css");
-    const install_assets_js = b.addInstallFile(b.path("example_app/app.js"), "bin/assets/app.js");
-    const install_assets_settings = b.addInstallFile(b.path("example_app/settings.html"), "bin/assets/settings.html");
+    // Install App HTML/CSS/JS files to bin/assets/ and bin/app/
+    const install_assets_html = b.addInstallFile(b.path("app/index.html"), "bin/assets/index.html");
+    const install_assets_css = b.addInstallFile(b.path("app/styles.css"), "bin/assets/styles.css");
+    const install_assets_js = b.addInstallFile(b.path("app/app.js"), "bin/assets/app.js");
+    const install_assets_settings = b.addInstallFile(b.path("app/settings.html"), "bin/assets/settings.html");
 
-    const install_app_html = b.addInstallFile(b.path("example_app/index.html"), "bin/app/index.html");
-    const install_app_css = b.addInstallFile(b.path("example_app/styles.css"), "bin/app/styles.css");
-    const install_app_js = b.addInstallFile(b.path("example_app/app.js"), "bin/app/app.js");
-    const install_app_settings = b.addInstallFile(b.path("example_app/settings.html"), "bin/app/settings.html");
+    const install_app_html = b.addInstallFile(b.path("app/index.html"), "bin/app/index.html");
+    const install_app_css = b.addInstallFile(b.path("app/styles.css"), "bin/app/styles.css");
+    const install_app_js = b.addInstallFile(b.path("app/app.js"), "bin/app/app.js");
+    const install_app_settings = b.addInstallFile(b.path("app/settings.html"), "bin/app/settings.html");
 
     b.getInstallStep().dependOn(&install_assets_html.step);
     b.getInstallStep().dependOn(&install_assets_css.step);
